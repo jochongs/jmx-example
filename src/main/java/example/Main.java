@@ -1,5 +1,8 @@
 package example;
 
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
+import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -14,6 +17,16 @@ final class RandomApplication {
 
     private final List<Thread> threads = new ArrayList<>();
     private final AtomicInteger value = new AtomicInteger(0);
+
+    RandomApplication() {
+        try {
+            MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+            ObjectName name = new ObjectName(this.getClass().getName());
+            mbs.registerMBean(this, name);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     // getter, setter
     // ------------------------------------------------------------
