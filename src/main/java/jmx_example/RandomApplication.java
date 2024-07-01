@@ -1,4 +1,4 @@
-package example;
+package jmx_example;
 
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
@@ -9,7 +9,8 @@ import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
 
-final class RandomApplication {
+public class RandomApplication implements RandomApplicationMBean {
+
     private int threadSleepTimeLimit = 3 * 1000;
     private int threadCountLimit = 10;
 
@@ -18,10 +19,10 @@ final class RandomApplication {
     private final List<Thread> threads = new ArrayList<>();
     private final AtomicInteger value = new AtomicInteger(0);
 
-    RandomApplication() {
+    public RandomApplication() {
         try {
             MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
-            ObjectName name = new ObjectName(this.getClass().getName());
+            ObjectName name = new ObjectName("jmx_example:type=jmx_example.RandomApplication");
             mbs.registerMBean(this, name);
         } catch (Exception e) {
             e.printStackTrace();
@@ -32,34 +33,42 @@ final class RandomApplication {
     // ------------------------------------------------------------
     // ------------------------------------------------------------
 
+    @Override
     public int getIncrementValueLimit() {
         return incrementValueLimit;
     }
 
+    @Override
     public void setIncrementValueLimit(int incrementValueLimit) {
         this.incrementValueLimit = incrementValueLimit;
     }
 
+    @Override
     public int getThreadCountLimit() {
         return threadCountLimit;
     }
 
+    @Override
     public void setThreadCountLimit(int threadCountLimit) {
         this.threadCountLimit = threadCountLimit;
     }
 
+    @Override
     public int getThreadSleepTimeLimit() {
         return threadSleepTimeLimit;
     }
 
+    @Override
     public void setThreadSleepTimeLimit(int threadSleepTimeLimit) {
         this.threadSleepTimeLimit = threadSleepTimeLimit;
     }
 
+    @Override
     public int getThreadCount() {
         return threads.size();
     }
 
+    @Override
     public int getValue() {
         return value.get();
     }
@@ -90,7 +99,7 @@ final class RandomApplication {
         new Thread(this::printResult).start();
 
         // 1 ~ n개 사이의 스레드를 랜덤하게 생성하고, join을 통해 전체 종료를 대기 한다
-        while(true) {
+        while (true) {
             IntStream.range(1, new Random(System.currentTimeMillis()).nextInt(threadCountLimit)).forEach(i -> {
                 Thread thread = new Thread(() -> {
                     try {
@@ -117,11 +126,5 @@ final class RandomApplication {
 
             threads.clear();
         }
-    }
-}
-
-public class Main {
-    public static void main(String[] args) {
-        new RandomApplication().start();
     }
 }
