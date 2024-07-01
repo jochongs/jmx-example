@@ -102,6 +102,9 @@ public class RandomApplication implements RandomApplicationMBean {
         new Thread(() -> {
             int inputThreadCount = Integer.parseInt(JOptionPane.showInputDialog("쓰레드 개수 조정"));
             setThreadCountLimit(inputThreadCount);
+
+            int inputThreadSleepTimeLimit = Integer.parseInt(JOptionPane.showInputDialog("쓰레드 time sleep 조정"));
+            setThreadSleepTimeLimit(inputThreadSleepTimeLimit);
         }).start();
 
         // 1 ~ n개 사이의 스레드를 랜덤하게 생성하고, join을 통해 전체 종료를 대기 한다
