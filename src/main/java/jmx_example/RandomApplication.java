@@ -2,6 +2,7 @@ package jmx_example;
 
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
+import javax.swing.*;
 import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.List;
@@ -98,9 +99,14 @@ public class RandomApplication implements RandomApplicationMBean {
         // 1초마다 현재 스레드 개수와 value 값을 출력
         new Thread(this::printResult).start();
 
+        new Thread(() -> {
+            int inputThreadCount = Integer.parseInt(JOptionPane.showInputDialog("쓰레드 개수 조정"));
+            setThreadCountLimit(inputThreadCount);
+        }).start();
+
         // 1 ~ n개 사이의 스레드를 랜덤하게 생성하고, join을 통해 전체 종료를 대기 한다
         while (true) {
-            IntStream.range(1, new Random(System.currentTimeMillis()).nextInt(threadCountLimit)).forEach(i -> {
+            IntStream.range(1, new Random(System.currentTimeMillis()).nextInt(threadCountLimit + 1) + 1).forEach(i -> {
                 Thread thread = new Thread(() -> {
                     try {
                         // 0 ~ n초 사이의 랜덤한 시간만큼 스레드를 대기
